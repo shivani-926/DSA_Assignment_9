@@ -1,0 +1,85 @@
+#include <iostream>
+using namespace std;
+
+class Graph {
+public:
+    int n;
+    int Adj[200][200];
+    int key[200];
+    int pi[200];
+    bool Q[200];
+
+    Graph(int vertices) {
+        n = vertices;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                Adj[i][j] = 0;
+    }
+
+    void addEdge(int u, int v, int w) {
+        Adj[u][v] = w;
+        Adj[v][u] = w;
+    }
+
+    int extractmin() {
+        int minimum = 999999;
+        int u = -1;
+        for (int i = 0; i < n; i++) {
+            if (Q[i] && key[i] < minimum) {
+                minimum = key[i];
+                u = i;
+            }
+        }
+        return u;
+    }
+
+    void prim(int r) {
+        for (int u = 0; u < n; u++) {
+            key[u] = 999999;
+            pi[u] = -1;
+            Q[u] = true;
+        }
+
+        key[r] = 0;
+
+        while (true) {
+            int u = extractmin();
+            if (u == -1) break;
+            Q[u] = false;
+
+            for (int v = 0; v < n; v++) {
+                if (Adj[u][v] != 0 && Q[v] && Adj[u][v] < key[v]) {
+                    pi[v] = u;
+                    key[v] = Adj[u][v];
+                }
+            }
+        }
+    }
+
+    void printMST() {
+        for (int v = 0; v < n; v++)
+            cout << v << "  pi=" << pi[v] << "  key=" << key[v] << endl;
+    }
+};
+
+int main() {
+    int n, m;
+    cin >> n;
+    cin >> m;
+
+    Graph G(n);
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        G.addEdge(u, v, w);
+    }
+
+    int r;
+    cin >> r;
+
+    G.prim(r);
+    G.printMST();
+
+    return 0;
+}
